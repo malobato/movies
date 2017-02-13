@@ -1,0 +1,17 @@
+server:
+  port: 8080
+  #ssl:
+    # You must add the certificate to the Java Key Store with cacerts
+    #key-store: classpath:xxx.jks
+    #key-store-password: xxx
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://172.17.0.2/movies
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.security: INFO
+    org.springframework.data: INFO
