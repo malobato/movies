@@ -8,10 +8,8 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://172.17.0.2/movies
+      uri: mongodb://localhost/movies
 
 logging:
   level:
     org.springframework: INFO
-    org.springframework.security: INFO
-    org.springframework.data: INFO
