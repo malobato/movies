@@ -12,6 +12,9 @@ import com.coderszone.services.MovieService;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.sort.Sort;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
@@ -20,10 +23,13 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.HeaderCell;
+import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.Grid.SingleSelectionModel;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -52,6 +58,30 @@ public class MoviesView extends UI {
 
 		Grid grid = new Grid();
 		loadMovies( grid );
+		
+		// Filter row
+//		HeaderRow filterRow = grid.appendHeaderRow();
+//		
+//		HeaderCell cell = filterRow.getCell( "title" );
+//		
+//		TextField filterField = new TextField();
+//
+//		filterField.setImmediate( true );
+//		filterField.setInputPrompt( "Title" );
+//		filterField.addTextChangeListener( change -> {
+//			
+//			BeanItemContainer<Movie> container = (BeanItemContainer<Movie>) grid.getContainerDataSource(); 
+//			
+//			container.removeContainerFilters( "title" );
+//			
+//			if ( !change.getText().isEmpty() ) {
+//				
+//				container.addContainerFilter( new SimpleStringFilter( "title", change.getText(), true, false ) );
+//			}
+//		} );
+//			
+//		cell.setComponent( filterField );
+		
 		grid.setSizeFull();
 		grid.removeColumn( "description" );
 		grid.removeColumn( "poster" );
@@ -62,6 +92,12 @@ public class MoviesView extends UI {
 		grid.setSelectionMode( SelectionMode.SINGLE );
 		grid.addSelectionListener( selectionEvent -> movieClick( grid ) );
 
+		TextField searchTxt = new TextField();
+		searchTxt.setInputPrompt( "Filter movie" );
+		searchTxt.setWidth( "100%" );
+		searchTxt.focus();
+		searchTxt.addTextChangeListener( textChangeEvent -> filterMovieList( textChangeEvent, grid ) );
+		
 		Button searchBtn = new Button( "Search" );
 		searchBtn.setWidthUndefined();
 		searchBtn.setStyleName( ValoTheme.BUTTON_PRIMARY );
@@ -73,8 +109,10 @@ public class MoviesView extends UI {
 		toolBar.setMargin( false );
 		toolBar.setSpacing( true );
 		toolBar.addComponent( title );
+		toolBar.addComponent( searchTxt );
 		toolBar.addComponent( searchBtn );
 		toolBar.setComponentAlignment( title, Alignment.MIDDLE_LEFT );
+		toolBar.setComponentAlignment( searchTxt,Alignment.MIDDLE_CENTER );
 		toolBar.setComponentAlignment( searchBtn, Alignment.MIDDLE_RIGHT );
 		
 		VerticalLayout container = new VerticalLayout();		
@@ -89,6 +127,21 @@ public class MoviesView extends UI {
 	}
 
 
+	private void filterMovieList( TextChangeEvent textChangeEvent, Grid grid ) {
+
+		BeanItemContainer<Movie> container = (BeanItemContainer<Movie>) grid.getContainerDataSource(); 
+		
+		String text = textChangeEvent.getText();
+		
+		container.removeContainerFilters( "title" );
+		
+		if ( !text.isEmpty() ) {
+			
+			container.addContainerFilter( new SimpleStringFilter( "title", text, true, false ) );
+		}			
+	}
+	
+	
 	private void searchMovie( Grid grid ) {
 
 		SearchMovieView searchMovieView = new SearchMovieView();
