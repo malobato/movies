@@ -3,8 +3,7 @@ package com.coderszone.views;
 
 import java.io.File;
 
-import org.springframework.data.annotation.Transient;
-
+import com.coderszone.I18n;
 import com.coderszone.model.Movie;
 import com.coderszone.services.MovieService;
 import com.vaadin.server.FileResource;
@@ -26,14 +25,15 @@ public class ShowMovieView extends Window {
 
 	private Movie movie;
 	private String postersPath;
-	@Transient
 	private MovieService movieService;
+	private I18n i18n;
 
 
-	public ShowMovieView( Movie movie, MovieService movieService, String postersPath ) {
+	public ShowMovieView( Movie movie, MovieService movieService, I18n i18n, String postersPath ) {
 
 		this.movie = movie;
 		this.movieService = movieService;
+		this.i18n = i18n;
 		this.postersPath = postersPath;
 
 		setIcon( FontAwesome.FILM );
@@ -53,7 +53,7 @@ public class ShowMovieView extends Window {
 	private void initComponents() {
 
 		File file = new File( postersPath + movie.getMovieId() + "f" );
-		
+
 		if ( !file.exists() ) {
 
 			file = new File( postersPath + "notfound.jpg" );
@@ -95,11 +95,11 @@ public class ShowMovieView extends Window {
 		description.setReadOnly( true );
 		description.setSizeFull();
 
-		Button saveButton = new Button( "Save" );
+		Button saveButton = new Button( i18n.get( "save" ) );
 		saveButton.addClickListener( clickEvent -> saveMovie() );
 		saveButton.setWidthUndefined();
 
-		Button deleteButton = new Button( "Delete" );
+		Button deleteButton = new Button( i18n.get( "delete" ) );
 		deleteButton.addClickListener( clickEvent -> deleteMovie() );
 		deleteButton.setWidthUndefined();
 
@@ -134,7 +134,7 @@ public class ShowMovieView extends Window {
 		layout.addComponent( poster );
 		layout.setComponentAlignment( poster, Alignment.MIDDLE_CENTER );
 		layout.addComponent( movieData );
-		
+
 		if ( !movieService.exists( movie.getMovieId() ) ) {
 			deleteButton.setEnabled( false );
 		}
@@ -150,8 +150,8 @@ public class ShowMovieView extends Window {
 
 		movieService.save( movie );
 
-		Notification.show( "Movie saved", Type.HUMANIZED_MESSAGE );
-		
+		Notification.show( i18n.get( "movie_saved" ), Type.HUMANIZED_MESSAGE );
+
 		close();
 	}
 
@@ -160,8 +160,8 @@ public class ShowMovieView extends Window {
 
 		movieService.delete( movie );
 
-		Notification.show( "Movie deleted", Type.WARNING_MESSAGE );
-		
+		Notification.show( i18n.get( "movie_deleted" ), Type.WARNING_MESSAGE );
+
 		close();
 	}
 }

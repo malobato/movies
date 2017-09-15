@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Transient;
 
+import com.coderszone.I18n;
 import com.coderszone.model.Movie;
 import com.coderszone.services.MovieService;
 import com.vaadin.annotations.Theme;
@@ -37,6 +38,13 @@ import com.vaadin.ui.themes.ValoTheme;
 @Theme( "valo" )
 public class MoviesView extends UI {
 
+	private static final String TITLE = "title";
+	private static final String YEAR = "year";
+	private static final String RATING = "rating";
+	private static final String DURATION = "duration";
+	private static final String DIRECTORS = "directors";
+	private static final String GENRES = "genres";
+
 	@Value( "${POSTERS_PATH}" )
 	private String postersPath;
 
@@ -44,38 +52,51 @@ public class MoviesView extends UI {
 	@Transient
 	private MovieService movieService;
 
+	@Autowired
+	private I18n i18n;
+
 
 	@Override
 	protected void init( VaadinRequest request ) {
 
 		Label title = new Label();
 		title.setCaptionAsHtml( true );
-		title.setCaption( "<h1>" + FontAwesome.VIDEO_CAMERA.getHtml() + " Movies</h1>" );
+		title.setCaption( "<h1>" + FontAwesome.VIDEO_CAMERA.getHtml() + " " + i18n.get( "movies" ) + "</h1>" );
 
 		TextField searchText = new TextField();
 
 		Grid grid = new Grid();
+
 		loadMovies( searchText, grid );
+
 		grid.setSizeFull();
+
 		grid.removeColumn( "description" );
 		grid.removeColumn( "poster" );
 		grid.removeColumn( "image" );
 		grid.removeColumn( "movieId" );
-		grid.setColumnOrder( "title", "year", "rating", "duration" );
-		grid.getColumn( "year" ).setWidth( 100 );
-		grid.getColumn( "rating" ).setWidth( 100 );
-		grid.getColumn( "duration" ).setWidth( 100 );
-		grid.getColumn( "directors" ).setWidth( 500 );
-		grid.setSortOrder( Sort.by( "title", SortDirection.ASCENDING ).build() );
+
+		grid.setColumnOrder( TITLE, YEAR, RATING, DURATION );
+
+		grid.getColumn( TITLE ).setHeaderCaption( i18n.get( TITLE ) );
+		grid.getColumn( YEAR ).setWidth( 100 ).setHeaderCaption( i18n.get( YEAR ) );
+		grid.getColumn( RATING ).setWidth( 110 ).setHeaderCaption( i18n.get( RATING ) );
+		grid.getColumn( DURATION ).setWidth( 100 ).setHeaderCaption( i18n.get( DURATION ) );
+		grid.getColumn( DIRECTORS ).setWidth( 500 ).setHeaderCaption( i18n.get( DIRECTORS ) );
+		grid.getColumn( GENRES ).setHeaderCaption( i18n.get( GENRES ) );
+
+		grid.setSortOrder( Sort.by( TITLE, SortDirection.ASCENDING ).build() );
+
 		grid.setSelectionMode( SelectionMode.SINGLE );
+
 		grid.addSelectionListener( selectionEvent -> movieClick( searchText, grid ) );
 
-		searchText.setInputPrompt( "Filter movie" );
+		searchText.setInputPrompt( i18n.get( "filter_movie" ) );
 		searchText.setWidth( "100%" );
 		searchText.focus();
 		searchText.addTextChangeListener( textChangeEvent -> filterMovieList( textChangeEvent.getText(), grid ) );
 
-		Button searchBtn = new Button( "Search" );
+		Button searchBtn = new Button( i18n.get( "search" ) );
 		searchBtn.setWidthUndefined();
 		searchBtn.setStyleName( ValoTheme.BUTTON_PRIMARY );
 		searchBtn.setClickShortcut( KeyCode.ENTER, null );
@@ -109,11 +130,11 @@ public class MoviesView extends UI {
 		@SuppressWarnings( "unchecked" )
 		BeanItemContainer<Movie> container = (BeanItemContainer<Movie>) grid.getContainerDataSource();
 
-		container.removeContainerFilters( "title" );
+		container.removeContainerFilters( TITLE );
 
 		if ( !text.isEmpty() ) {
 
-			container.addContainerFilter( new SimpleStringFilter( "title", text, true, false ) );
+			container.addContainerFilter( new SimpleStringFilter( TITLE, text, true, false ) );
 		}
 	}
 
@@ -124,7 +145,10 @@ public class MoviesView extends UI {
 
 		searchMovieView.setPostersPath( postersPath );
 		searchMovieView.setMovieService( movieService );
+		searchMovieView.setI18n( i18n );
 		searchMovieView.addCloseListener( event -> loadMovies( searchText, grid ) );
+
+		searchMovieView.initComponents();
 
 		UI.getCurrent().addWindow( searchMovieView );
 	}
@@ -154,7 +178,7 @@ public class MoviesView extends UI {
 
 			Movie movie = movieService.getMovieById( id );
 
-			Window window = new ShowMovieView( movie, movieService, postersPath );
+			Window window = new ShowMovieView( movie, movieService, i18n, postersPath );
 
 			window.addCloseListener( event -> loadMovies( searchText, grid ) );
 

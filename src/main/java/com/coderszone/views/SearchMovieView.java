@@ -4,8 +4,7 @@ package com.coderszone.views;
 import java.io.File;
 import java.util.List;
 
-import org.springframework.data.annotation.Transient;
-
+import com.coderszone.I18n;
 import com.coderszone.model.Movie;
 import com.coderszone.services.MovieService;
 import com.vaadin.data.Container;
@@ -38,14 +37,17 @@ public class SearchMovieView extends Window {
 	private static final String COLUMN_POSTER = "Poster";
 
 	private String postersPath;
-	@Transient
 	private MovieService movieService;
+	private I18n i18n;
 
 
 	public SearchMovieView() {
-
+	}
+	
+	public void initComponents() {
+		
 		setIcon( FontAwesome.VIDEO_CAMERA );
-		setCaption( " Search movies" );
+		setCaption( " " + i18n.get( "search_movies" ) );
 		setClosable( true );
 		setResizable( false );
 		setWidth( "75%" );
@@ -74,23 +76,23 @@ public class SearchMovieView extends Window {
 		moviesTbl.setColumnCollapsed( COLUMN_ID, true );
 		moviesTbl.setColumnCollapsed( COLUMN_POSTER, true );
 		moviesTbl.addValueChangeListener( event -> movieClick( moviesTbl ) );
-		
+
 		TextField searchTxt = new TextField();
 		searchTxt.setInputPrompt( "Enter a movie to search" );
 		searchTxt.setWidth( "100%" );
 		searchTxt.setRequired( true );
-		searchTxt.addValidator( new StringLengthValidator( "Cannot be empty", 1, null, false ) );
+		searchTxt.addValidator( new StringLengthValidator( i18n.get( "cannot_be_empty" ), 1, null, false ) );
 		searchTxt.focus();
 
-		Button searchBtn = new Button( "Search" );
+		Button searchBtn = new Button( i18n.get( "search" ) );
 		searchBtn.setWidth( "100%" );
-		searchBtn.setDescription( "Search a movie with the words" );
+		searchBtn.setDescription( i18n.get( "search_a_movie_with_the_words" ) );
 		searchBtn.addStyleName( ValoTheme.BUTTON_PRIMARY );
 		searchBtn.setClickShortcut( KeyCode.ENTER, null );
 		searchBtn.addClickListener( event -> loadMovies( moviesTbl, searchTxt ) );
-		searchBtn.setErrorHandler( event -> Notification.show( "Searching error" ) );
+		searchBtn.setErrorHandler( event -> Notification.show( i18n.get( "searching_error" ) ) );
 
-		Button closeBtn = new Button( "Close" );
+		Button closeBtn = new Button( i18n.get( "close" ) );
 		closeBtn.setWidth( "100%" );
 		closeBtn.setClickShortcut( KeyCode.ESCAPE, null );
 		closeBtn.addClickListener( event -> close() );
@@ -129,7 +131,7 @@ public class SearchMovieView extends Window {
 
 			Movie movie = movieService.getMovieById( id );
 
-			UI.getCurrent().addWindow( new ShowMovieView( movie, movieService, postersPath ) );
+			UI.getCurrent().addWindow( new ShowMovieView( movie, movieService, i18n, postersPath ) );
 		}
 
 		moviesTbl.select( null );
@@ -174,7 +176,7 @@ public class SearchMovieView extends Window {
 		}
 		else {
 
-			Notification.show( "Not movies found" );
+			Notification.show( i18n.get( "not_movies_found" ) );
 		}
 	}
 
@@ -188,5 +190,11 @@ public class SearchMovieView extends Window {
 	public void setMovieService( MovieService movieService ) {
 
 		this.movieService = movieService;
+	}
+
+
+	public void setI18n( I18n i18n ) {
+
+		this.i18n = i18n;
 	}
 }
