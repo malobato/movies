@@ -42,11 +42,11 @@ public class I18n {
 
 	private void setupMessageSource() {
 
-		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
 
-		messageSource.setBasename( "locale/messages" );
-		messageSource.setDefaultEncoding( "UTF-8" );
+		resourceBundleMessageSource.setBasename( "locale/messages" );
+		resourceBundleMessageSource.setDefaultEncoding( "UTF-8" );
 
-		this.messageSource = messageSource;
+		this.messageSource = resourceBundleMessageSource;
 	}
 }

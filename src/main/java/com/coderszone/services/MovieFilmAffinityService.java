@@ -59,7 +59,7 @@ public class MovieFilmAffinityService implements MovieService {
 			Elements moviesFound = search.select( "div.z-search" ).select( "div.se-it" );
 
 			// Not found anything?
-			if ( moviesFound.size() == 0 ) {
+			if ( moviesFound.isEmpty() ) {
 
 				// Check for a single movie
 				moviesLst = getMovie( search );
@@ -78,18 +78,11 @@ public class MovieFilmAffinityService implements MovieService {
 
 		List<Movie> moviesLst = new ArrayList<>();
 
-		try {
+		Movie movie = parseMovie( document );
 
-			Movie movie = parseMovie( document );
+		if ( movie != null ) {
 
-			if ( movie != null ) {
-
-				moviesLst.add( movie );
-			}
-		}
-		catch ( IOException ioException ) {
-
-			LOGGER.error( "Error parsing movie info. {}", ioException );
+			moviesLst.add( movie );
 		}
 
 		return moviesLst;
@@ -158,9 +151,15 @@ public class MovieFilmAffinityService implements MovieService {
 
 		String poster = IMAGE_NOT_AVAILABLE;
 
-		if ( !url.isEmpty() && url.compareTo( NO_IMAGE_FOUND ) != 0 && FileUtils.getMoviePoster( url, postersPath + movieId ) ) {
+		try {
+			if ( !url.isEmpty() && url.compareTo( NO_IMAGE_FOUND ) != 0 && FileUtils.getMoviePoster( url, postersPath + movieId ) ) {
 
-			poster = movieId;
+				poster = movieId;
+			}
+		}
+		catch ( NotMoviePosterException notMoviePoster ) {
+			
+			poster = IMAGE_NOT_AVAILABLE;
 		}
 
 		return poster;
@@ -187,7 +186,7 @@ public class MovieFilmAffinityService implements MovieService {
 	}
 
 
-	private Movie parseMovie( Document document ) throws IOException {
+	private Movie parseMovie( Document document ) {
 
 		Movie movie = null;
 
@@ -316,8 +315,8 @@ public class MovieFilmAffinityService implements MovieService {
 
 		return movieRepository.exists( movieId );
 	}
-	
-	
+
+
 	@Override
 	public void save( Movie movie ) {
 

@@ -42,6 +42,7 @@ public class SearchMovieView extends Window {
 
 
 	public SearchMovieView() {
+		/* Empty */
 	}
 	
 	public void initComponents() {

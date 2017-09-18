@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.annotation.Transient;
 
 import com.coderszone.I18n;
 import com.coderszone.model.Movie;
@@ -49,7 +48,6 @@ public class MoviesView extends UI {
 	private String postersPath;
 
 	@Autowired
-	@Transient
 	private MovieService movieService;
 
 	@Autowired

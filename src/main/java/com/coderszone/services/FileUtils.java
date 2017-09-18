@@ -70,6 +70,7 @@ public class FileUtils {
 		}
 		catch ( IOException ioException ) {
 
+			LOGGER.error( "Error downloading movie poster" );
 			throw ioException;
 		}
 	}
