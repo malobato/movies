@@ -4,8 +4,8 @@ package com.coderszone.views;
 import java.io.File;
 import java.util.List;
 
-import com.coderszone.I18n;
 import com.coderszone.model.Movie;
+import com.coderszone.services.I18n;
 import com.coderszone.services.MovieService;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.IndexedContainer;

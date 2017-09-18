@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.coderszone.I18n;
 import com.coderszone.model.Movie;
+import com.coderszone.services.I18n;
 import com.coderszone.services.MovieService;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.sort.Sort;
